@@ -60,6 +60,27 @@ func getAllEvents(w http.ResponseWriter, r *http.Request) {
 }
 
 
+func updateEvent(w http.ResponseWriter, r *http.Request) {
+	eventID := mux.Vars(r)["id"]
+	var updatedEvent event
+
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		fmt.Fprintf(w, "Kindly enter data with the event title and description only in order to update")
+	}
+	json.Unmarshal(reqBody, &updatedEvent)
+
+	for i, singleEvent := range events {
+		if singleEvent.ID == eventID {
+			singleEvent.Title = updatedEvent.Title
+			singleEvent.Description = updatedEvent.Description
+			events = append(events[:i], singleEvent)
+			json.NewEncoder(w).Encode(singleEvent)
+		}
+	}
+}
+
+
 func homeLink(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Welcome")
 }
